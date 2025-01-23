@@ -1,0 +1,10 @@
+services:
+  rest-api-java:
+    container_name: "SpringAddressAPI"
+    image: postgres:17-alpine3.20
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: address
+      POSTGRES_USER: address
+      POSTGRES_DB: address

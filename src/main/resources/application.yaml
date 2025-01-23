@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: SpringAddressAPI
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/address"
+    username: "address"
+    password: "address"
+  jpa:
+    hibernate:
+      ddl-auto: update
+  output:
+    ansi:
+      enabled: always
