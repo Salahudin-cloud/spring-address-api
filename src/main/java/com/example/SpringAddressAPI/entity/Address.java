@@ -44,4 +44,7 @@ public class Address {
     @UpdateTimestamp(source = SourceType.DB)
     private Instant update_at;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users user;
 }
