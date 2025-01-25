@@ -16,4 +16,9 @@ public class WebResponse <T> {
     private String message;
 
     private T data;
+
+    private Integer totalPages;
+    private Long totalItems;
+    private Integer currentPages;
+    private Integer itemPerPage;
 }
