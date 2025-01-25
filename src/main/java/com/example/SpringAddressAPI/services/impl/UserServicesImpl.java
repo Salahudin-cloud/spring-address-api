@@ -2,9 +2,7 @@ package com.example.SpringAddressAPI.services.impl;
 
 import com.example.SpringAddressAPI.dto.WebResponse;
 import com.example.SpringAddressAPI.dto.address.AddressResponse;
-import com.example.SpringAddressAPI.dto.user.UserListRequest;
-import com.example.SpringAddressAPI.dto.user.UserRequest;
-import com.example.SpringAddressAPI.dto.user.UserResponse;
+import com.example.SpringAddressAPI.dto.user.*;
 import com.example.SpringAddressAPI.entity.Address;
 import com.example.SpringAddressAPI.entity.Users;
 import com.example.SpringAddressAPI.repository.AddressRepository;
@@ -12,14 +10,18 @@ import com.example.SpringAddressAPI.repository.UserRepository;
 import com.example.SpringAddressAPI.services.UserServices;
 import com.example.SpringAddressAPI.services.ValidatorServices;
 import com.example.SpringAddressAPI.utils.BCrypt;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,7 +89,8 @@ public class UserServicesImpl implements UserServices {
                 .map(users -> {
                     List<AddressResponse> addressResponses = users.getAddresses().stream()
                             .map(address -> AddressResponse.builder()
-                                    .state(address.getStreet())
+                                    .id(address.getId())
+                                    .street(address.getStreet())
                                     .city(address.getCity())
                                     .state(address.getState())
                                     .zip_code(address.getZip_code())
@@ -98,6 +101,7 @@ public class UserServicesImpl implements UserServices {
                             .toList();
 
                     return UserResponse.builder()
+                            .id(users.getId())
                             .name(users.getName())
                             .username(users.getUsername())
                             .password(users.getPassword())
@@ -117,6 +121,46 @@ public class UserServicesImpl implements UserServices {
                  .totalItems(page.getTotalElements())
                  .build();
 
+    }
+
+    @Override
+    public UserUpdateResponse update(Long id , UserUpdateRequest userUpdateRequest) {
+        validatorServices.validate(userUpdateRequest);
+
+        Users users = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+
+        Map<String, Consumer<String>> fieldToSetter = Map.of(
+                "name", users::setName,
+                "username", users::setUsername,
+                "password", users::setPassword,
+                "age", value -> users.setAge(Long.parseLong(value))
+        );
+
+        if (userUpdateRequest.getName() != null) fieldToSetter.get("name").accept(userUpdateRequest.getName());
+        if (userUpdateRequest.getUsername() != null) fieldToSetter.get("username").accept(userUpdateRequest.getUsername());
+        if (userUpdateRequest.getPassword() != null) fieldToSetter.get("password").accept(BCrypt.hashpw(userUpdateRequest.getPassword(), BCrypt.gensalt()));
+        if (userUpdateRequest.getAge() != null) fieldToSetter.get("age").accept(String.valueOf(userUpdateRequest.getAge()));
+
+        userRepository.save(users);
+
+        return UserUpdateResponse.builder()
+                .id(users.getId())
+                .name(users.getName())
+                .username(users.getUsername())
+                .password(users.getPassword())
+                .age(users.getAge())
+                .created_at(users.getCreated_at())
+                .update_at(users.getUpdate_at())
+                .build();
+    }
+
+    @Transactional
+    @Override
+    public void delete(Long id) {
+        Users users = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        userRepository.delete(users);
     }
 
 

@@ -15,6 +15,7 @@ import java.time.Instant;
 @Builder
 public class AddressResponse {
 
+    private Long  id;
     private String street;
 
     private String city;

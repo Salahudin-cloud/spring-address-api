@@ -1,9 +1,7 @@
 package com.example.SpringAddressAPI.controller;
 
 import com.example.SpringAddressAPI.dto.WebResponse;
-import com.example.SpringAddressAPI.dto.user.UserListRequest;
-import com.example.SpringAddressAPI.dto.user.UserRequest;
-import com.example.SpringAddressAPI.dto.user.UserResponse;
+import com.example.SpringAddressAPI.dto.user.*;
 import com.example.SpringAddressAPI.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -40,4 +38,29 @@ public class UserController {
         return userServices.list(userListRequest);
     }
 
+    @PatchMapping(
+            path = "/users",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<UserUpdateResponse> update(
+            @RequestParam Long id,
+            @RequestBody UserUpdateRequest userUpdateRequest
+            ){
+        UserUpdateResponse data =  userServices.update(id, userUpdateRequest);
+        return WebResponse.<UserUpdateResponse>builder()
+                .message("OK")
+                .data(data)
+                .build();
+    }
+
+    @DeleteMapping(
+            path = "/users"
+    )
+    public WebResponse<String> delete(@RequestParam Long id) {
+        userServices.delete(id);
+        return WebResponse.<String>builder()
+                .message("OK")
+                .build();
+    }
 }
