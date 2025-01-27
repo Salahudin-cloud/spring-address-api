@@ -4,8 +4,6 @@ import com.example.SpringAddressAPI.dto.WebResponse;
 import com.example.SpringAddressAPI.dto.address.AddressRequest;
 import com.example.SpringAddressAPI.dto.address.AddressResponse;
 import com.example.SpringAddressAPI.dto.address.UpdateAddressRequest;
-import com.example.SpringAddressAPI.dto.user.UserListRequest;
-import com.example.SpringAddressAPI.dto.user.UserResponse;
 import com.example.SpringAddressAPI.services.AddressServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -41,6 +39,24 @@ public class AddressController {
         return  addressServices.update(id, address_id, updateAddressRequest);
     }
 
+    @DeleteMapping(
+            path = "/address"
+    )
+    public WebResponse<String> delete(
+            @RequestParam Long id
+    ){
+        addressServices.delete(id);
+        return WebResponse.<String>builder()
+                .message("OK")
+                .build();
+    }
 
+    @GetMapping(
+            path = "/address",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<List<AddressResponse>> getAddresses(@RequestParam Long id) {
+        return addressServices.getAddresses(id);
+    }
 
 }

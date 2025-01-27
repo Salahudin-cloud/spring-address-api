@@ -14,4 +14,6 @@ public interface UserServices {
     public UserUpdateResponse update(Long id , UserUpdateRequest userUpdateRequest);
 
     public void delete(Long id);
+
+    public WebResponse<UserResponse> get(Long id);
 }

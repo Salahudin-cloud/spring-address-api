@@ -10,7 +10,7 @@ import com.example.SpringAddressAPI.repository.UserRepository;
 import com.example.SpringAddressAPI.services.UserServices;
 import com.example.SpringAddressAPI.services.ValidatorServices;
 import com.example.SpringAddressAPI.utils.BCrypt;
-import org.apache.catalina.User;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -161,6 +161,47 @@ public class UserServicesImpl implements UserServices {
         Users users = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         userRepository.delete(users);
+    }
+
+    @Override
+    public WebResponse<UserResponse> get(Long id) {
+        try {
+            Users users = userRepository.getReferenceById(id);
+            List<AddressResponse> addressResponses = users.getAddresses().stream().map(
+                    address -> AddressResponse.builder()
+                            .id(address.getId())
+                            .street(address.getStreet())
+                            .city(address.getCity())
+                            .state(address.getState())
+                            .zip_code(address.getZip_code())
+                            .country(address.getCountry())
+                            .created_at(address.getCreated_at())
+                            .update_at(address.getUpdate_at())
+                            .build()
+            ).toList();
+
+            UserResponse userResponse = UserResponse.builder()
+                    .id(users.getId())
+                    .name(users.getName())
+                    .username(users.getUsername())
+                    .password(users.getPassword())
+                    .age(users.getAge())
+                    .created_at(users.getCreated_at())
+                    .update_at(users.getUpdate_at())
+                    .address(addressResponses)
+                    .build();
+
+            return WebResponse.<UserResponse>builder()
+                    .message("OK")
+                    .data(userResponse)
+                    .build();
+        } catch (EntityNotFoundException e) {
+            throw new EntityNotFoundException("User with ID " + id + " not found.");
+        } catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred. Please try again later.");
+        }
+
+
     }
 
 

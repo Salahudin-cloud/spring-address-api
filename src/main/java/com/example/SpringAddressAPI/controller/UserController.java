@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.attribute.standard.Media;
 import java.util.List;
 
 @RestController
@@ -62,5 +63,13 @@ public class UserController {
         return WebResponse.<String>builder()
                 .message("OK")
                 .build();
+    }
+
+    @GetMapping(
+            path = "/users/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<UserResponse> get(@PathVariable Long id){
+        return userServices.get(id);
     }
 }
