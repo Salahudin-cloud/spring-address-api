@@ -8,3 +8,17 @@ services:
       POSTGRES_PASSWORD: address
       POSTGRES_USER: address
       POSTGRES_DB: address
+  test-db:
+    container_name: "SpringAddressAPITest"
+    image: postgres:17-alpine3.20
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD: address
+      POSTGRES_USER: address
+      POSTGRES_DB: test_address
+    networks:
+      - spring_network
+networks:
+  spring_network:
+    driver: bridge

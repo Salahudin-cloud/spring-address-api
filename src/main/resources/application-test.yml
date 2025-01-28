@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: SpringAddressAPI-Test
+  datasource:
+    url: "jdbc:postgresql://localhost:5433/test_address"
+    username: "address"
+    password: "address"
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: true
+  output:
+    ansi:
+      enabled: always

@@ -36,6 +36,7 @@ public class UserServicesImpl implements UserServices {
     @Autowired
     private ValidatorServices validatorServices;
 
+    @Transactional
     @Override
     public void create(UserRequest userRequest) {
         validatorServices.validate(userRequest);
@@ -50,7 +51,6 @@ public class UserServicesImpl implements UserServices {
         users.setUsername(userRequest.getUsername());
         users.setPassword(BCrypt.hashpw(userRequest.getPassword(), BCrypt.gensalt()));
         users.setAge(userRequest.getAge());
-
 
         userRepository.save(users);
 
